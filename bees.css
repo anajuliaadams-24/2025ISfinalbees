@@ -1,0 +1,169 @@
+/* --- Base page styles --- */
+body {
+  margin: 0;
+  font-family: "Trebuchet MS", Arial, sans-serif; /* font family requirement */
+  color: #1f1f1f; /* font color requirement */
+  background: #fff7d6; /* custom background color requirement */
+}
+
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* --- Card blocks (div styling/positioning) --- */
+.card {
+  background: rgba(255, 255, 255, 0.85);
+  border: 2px solid #f2c94c;
+  border-radius: 14px;
+  padding: 18px 18px;
+  margin-bottom: 18px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* --- Header area --- */
+.header h1 {
+  margin: 0 0 6px 0;
+  color: #2b2b2b;
+  letter-spacing: 0.2px;
+}
+
+.subtitle {
+  margin: 0 0 12px 0;
+  color: #444; /* font color definition */
+}
+
+/* --- Navigation --- */
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.nav a {
+  text-decoration: none;
+  color: #1b1b1b;
+  background: #ffd24d;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid #e0b83f;
+  font-weight: 700;
+}
+
+.nav a:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.10);
+}
+
+.nav .jump {
+  background: #ffb703;
+}
+
+/* --- Layout: main + sidebar --- */
+.layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 18px;
+}
+
+.main p {
+  line-height: 1.55;
+}
+
+/* --- Image styling --- */
+.figure {
+  margin: 14px 0 18px 0;
+}
+
+.figure img {
+  width: 100%;
+  max-height: 340px;
+  object-fit: cover;
+  border-radius: 14px;
+  border: 2px solid #f2c94c;
+}
+
+.figure figcaption {
+  font-size: 0.95rem;
+  color: #555;
+  margin-top: 6px;
+}
+
+/* --- Lists --- */
+.steps {
+  line-height: 1.6;
+}
+
+.steps ul {
+  margin-top: 6px;
+  margin-bottom: 10px;
+}
+
+.links {
+  padding-left: 18px;
+}
+
+/* --- Callout blocks --- */
+.callout {
+  background: #fff1a8;
+  border-left: 8px solid #ffb703;
+  padding: 12px 12px;
+  border-radius: 10px;
+  margin: 14px 0;
+}
+
+.note {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  background: #f3f3f3;
+  border: 1px dashed #aaa;
+  color: #333;
+}
+
+/* --- YouTube embed responsive wrapper --- */
+.video-wrap {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%; /* 16:9 */
+  border-radius: 14px;
+  overflow: hidden;
+  border: 2px solid #f2c94c;
+}
+
+.video-wrap iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* --- Tableau section --- */
+.tableau {
+  overflow: hidden;
+}
+
+.hint {
+  color: #444;
+  font-style: italic;
+}
+
+.toplink a {
+  font-weight: 700;
+  color: #1b1b1b;
+}
+
+/* --- Footer --- */
+.footer {
+  text-align: center;
+  color: #333;
+}
+
+/* --- Small screens --- */
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}

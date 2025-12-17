@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Happy Bee</title>
+  <style>
+    :root { --ui: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+
+    body {
+      margin: 0;
+      font-family: var(--ui);
+      background: #fff7d6;
+      display: grid;
+      place-items: center;
+      height: 100vh;
+      color: #1f1f1f;
+    }
+
+    .app { width: min(460px, 92vw); }
+
+    .topbar{
+      display:flex; justify-content:space-between; align-items:baseline;
+      margin-bottom:10px; gap:12px;
+    }
+    .title{ margin:0; font-weight:900; font-size:1.25rem; letter-spacing:.3px; }
+    .stats{ display:flex; gap:12px; font-weight:800; font-size:.95rem; }
+
+    .card{
+      background: rgba(255,255,255,.85);
+      border: 2px solid #f2c94c;
+      border-radius: 14px;
+      box-shadow: 0 10px 24px rgba(0,0,0,.10);
+      overflow:hidden;
+    }
+
+    .stage{ position:relative; }
+
+    canvas{
+      display:block;
+      width:100%;
+      height:auto;
+      background: linear-gradient(#cfefff, #f8fbff 55%, #a7e7a7 55%, #7ddc7d);
+    }
+
+    .controls{
+      margin-top:10px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    button{
+      flex:1;
+      min-width:140px;
+      border:1px solid #e0b83f;
+      background:#ffd24d;
+      border-radius:12px;
+      padding:10px 12px;
+      font-weight:900;
+      cursor:pointer;
+    }
+    button:hover{ transform: translateY(-1px); }
+
+    .hint{
+      margin-top:10px;
+      font-size:.9rem;
+      color:#444;
+      line-height:1.35;
+    }
+
+    .kbd{
+      display:inline-block;
+      padding:2px 8px;
+      border:1px solid #bbb;
+      border-bottom-width:3px;
+      border-radius:8px;
+      background:#fff;
+      font-weight:900;
+      font-size:.9rem;
+    }
+
+    .overlay{
+      position:absolute;
+      inset:0;
+      display:grid;
+      place-items:center;
+      padding:18px;
+      text-align:center;
+      background: rgba(255, 247, 214, 0.78);
+      backdrop-filter: blur(2px);
+    }
+
+    .panel{
+      width: min(380px, 94%);
+      background: rgba(255,255,255,.94);
+      border: 2px solid #f2c94c;
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 10px 20px rgba(0,0,0,.10);
+    }
+
+    .panel h2{ margin:0 0 6px; }
+    .panel p{ margin:6px 0; color:#333; }
+
+    .modeRow{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:10px;
+      margin-top:12px;
+    }
+
+    .modeBtn{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      padding:12px 12px;
+      border-radius:12px;
+      border:1px solid #e0b83f;
+      background:#fff1a8;
+      font-weight:900;
+      cursor:pointer;
+    }
+    .modeBtn:hover{ transform: translateY(-1px); box-shadow: 0 8px 16px rgba(0,0,0,.10); }
+    .modeBtn small{ font-weight:800; color:#555; }
+
+    .pill{
+      font-size:.8rem;
+      padding:4px 10px;
+      border-radius:999px;
+      border:1px solid #e0b83f;
+      background:#ffd24d;
+      font-weight:900;
+    }
+
+    .footerRow{
+      margin-top:12px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .secondary{
+      background:#ffffff;
+      border:1px solid #cfcfcf;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <div class="topbar">
+      <h1 class="title">🐝 Flappy Bee</h1>
+      <div class="stats">
+        <div>Score: <span id="score">0</span></div>
+        <div>Best: <span id="best">0</span></div>
+      </div>
+    </div>
+
+    <div class="card stage">
+      <canvas id="game" width="420" height="560" aria-label="Flappy Bee game canvas"></canvas>
+
+      <!-- START / GAME OVER MENU -->
+      <div class="overlay" id="overlay">
+        <div class="panel">
+          <h2 id="overlayTitle">Welcome to Flappy Bee!</h2>
+          <p id="overlayText">
+            Choose a difficulty, then flap with <span class="kbd">Space</span> or click/tap.
+          </p>
+
+          <div class="modeRow" id="modeRow">
+            <button class="modeBtn" data-mode="easy" type="button">
+              <span>Easy</span>
+              <span class="pill">Wider gaps</span>
+              <small>Slower flowers • gentler gravity</small>
+            </button>
+
+            <button class="modeBtn" data-mode="normal" type="button">
+              <span>Normal</span>
+              <span class="pill">Classic</span>
+              <small>Balanced speed • medium gaps</small>
+            </button>
+
+            <button class="modeBtn" data-mode="hard" type="button">
+              <span>Hard</span>
+              <span class="pill">Spicy</span>
+              <small>Faster flowers • tighter gaps</small>
+            </button>
+          </div>
+
+          <div class="footerRow">
+            <button id="startLastBtn" class="secondary" type="button">Start (Last Mode)</button>
+            <button id="howBtn" class="secondary" type="button">How to Play</button>
+          </div>
+
+          <p style="margin-top:10px; color:#555;">
+            Tip: press <span class="kbd">P</span> to pause • <span class="kbd">R</span> to restart
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="restartBtn" type="button">Restart</button>
+      <button id="pauseBtn" type="button">Pause</button>
+    </div>
+
+    <div class="hint">
+      Controls: <span class="kbd">Space</span> / click / tap = flap • <span class="kbd">P</span> = pause • <span class="kbd">R</span> = restart
+    </div>
+  </div>
+
+  <script>
+    // --- Canvas setup ---
+    const canvas = document.getElementById("game");
+    const ctx = canvas.getContext("2d");
+
+    const scoreEl = document.getElementById("score");
+    const bestEl = document.getElementById("best");
+
+    const overlay = document.getElementById("overlay");
+    const overlayTitle = document.getElementById("overlayTitle");
+    const overlayText = document.getElementById("overlayText");
+    const modeRow = document.getElementById("modeRow");
+
+    const startLastBtn = document.getElementById("startLastBtn");
+    const howBtn = document.getElementById("howBtn");
+    const restartBtn = document.getElementById("restartBtn");
+    const pauseBtn = document.getElementById("pauseBtn");
+
+    // --- Difficulty presets ---
+    // (These values are tuned to feel noticeably different.)
+    const MODES = {
+      easy:   { label: "Easy",   gravity: 0.40, flap: -8.4, speed: 2.25, gap: 175, spacing: 200 },
+      normal: { label: "Normal", gravity: 0.45, flap: -7.8, speed: 2.70, gap: 150, spacing: 170 },
+      hard:   { label: "Hard",   gravity: 0.52, flap: -7.2, speed: 3.25, gap: 130, spacing: 155 }
+    };
+
+    let modeKey = localStorage.getItem("flappyBeeMode") || "normal";
+    let cfg = { ...MODES[modeKey] };
+
+    // --- Game constants ---
+    const PIPE_WIDTH = 70;
+    const FLOOR_Y = canvas.height - 56;
+
+    // --- State ---
+    let running = false;
+    let paused = false;
+    let gameOver = false;
+
+    let score = 0;
+    let best = Number(localStorage.getItem("flappyBeeBest") || 0);
+    bestEl.textContent = best;
+
+    const bee = { x: 110, y: 220, r: 16, vy: 0, angle: 0 };
+    let pipes = [];
+    let frame = 0;
+
+    function applyMode(newModeKey) {
+      modeKey = newModeKey;
+      cfg = { ...MODES[modeKey] };
+      localStorage.setItem("flappyBeeMode", modeKey);
+    }
+
+    function showMenu(title, htmlText) {
+      overlayTitle.textContent = title;
+      overlayText.innerHTML = htmlText;
+      overlay.style.display = "grid";
+    }
+
+    function hideMenu() {
+      overlay.style.display = "none";
+    }
+
+    function reset(keepMenu = true) {
+      running = false;
+      paused = false;
+      gameOver = false;
+      score = 0;
+      scoreEl.textContent = score;
+
+      bee.x = 110;
+      bee.y = 220;
+      bee.vy = 0;
+      bee.angle = 0;
+
+      pipes = [];
+      frame = 0;
+
+      pauseBtn.textContent = "Pause";
+
+      if (keepMenu) {
+        showMenu(
+          "Welcome to Flappy Bee!",
+          `Choose a difficulty, then flap with <span class="kbd">Space</span> or click/tap.<br/>
+           <span style="color:#555;">Current mode: <strong>${MODES[modeKey].label}</strong></span>`
+        );
+      } else {
+        hideMenu();
+      }
+      render();
+    }
+
+    function start() {
+      if (gameOver) reset(false);
+      running = true;
+      paused = false;
+      hideMenu();
+      requestAnimationFrame(loop);
+    }
+
+    function endGame() {
+      running = false;
+      gameOver = true;
+
+      if (score > best) {
+        best = score;
+        localStorage.setItem("flappyBeeBest", best);
+        bestEl.textContent = best;
+      }
+
+      showMenu(
+        "Ouch! 🌸",
+        `Final score: <strong>${score}</strong><br/>
+         Mode: <strong>${MODES[modeKey].label}</strong><br/>
+         Click a difficulty to play again, or press <span class="kbd">R</span>.`
+      );
+    }
+
+    function togglePause() {
+      if (!running) return;
+      paused = !paused;
+      pauseBtn.textContent = paused ? "Resume" : "Pause";
+      if (!paused) requestAnimationFrame(loop);
+    }
+
+    function flap() {
+      // If menu is showing and game isn't running, start in current/last mode
+      if (!running) {
+        start();
+        return;
+      }
+      if (paused) return;
+      bee.vy = cfg.flap;
+    }
+
+    function spawnPipe() {
+      const topMin = 60;
+      const topMax = FLOOR_Y - 60 - cfg.gap;
+      const topH = Math.floor(topMin + Math.random() * (topMax - topMin));
+      pipes.push({ x: canvas.width + 10, topH, passed: false });
+    }
+
+    function rectCircleCollide(rx, ry, rw, rh, cx, cy, cr) {
+      const nearestX = Math.max(rx, Math.min(cx, rx + rw));
+      const nearestY = Math.max(ry, Math.min(cy, ry + rh));
+      const dx = cx - nearestX;
+      const dy = cy - nearestY;
+      return (dx*dx + dy*dy) <= cr*cr;
+    }
+
+    // --- Drawing helpers ---
+    function drawBee() {
+      ctx.save();
+      ctx.translate(bee.x, bee.y);
+      ctx.rotate(bee.angle);
+
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 18, 14, 0, 0, Math.PI * 2);
+      ctx.fillStyle = "#ffd24d";
+      ctx.fill();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = "#1f1f1f";
+      ctx.stroke();
+
+      ctx.lineWidth = 6;
+      ctx.strokeStyle = "#1f1f1f";
+      ctx.beginPath(); ctx.moveTo(-6, -12); ctx.lineTo(-6, 12); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(4, -12);  ctx.lineTo(4, 12);  ctx.stroke();
+
+      ctx.globalAlpha = 0.7;
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath();
+      ctx.ellipse(-2, -16, 10, 7, -0.4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+
+      ctx.fillStyle = "#1f1f1f";
+      ctx.beginPath();
+      ctx.arc(10, -3, 2, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    function drawFlowerPipe(x, y, w, h, flip=false) {
+      ctx.fillStyle = "#2e7d32";
+      ctx.fillRect(x, y, w, h);
+
+      ctx.globalAlpha = 0.18;
+      for (let i = 0; i < h; i += 36) {
+        ctx.beginPath();
+        const lx = flip ? x + w - 12 : x + 12;
+        const ly = y + i + 18;
+        ctx.ellipse(lx, ly, 16, 8, flip ? 0.3 : -0.3, 0, Math.PI * 2);
+        ctx.fillStyle = "#1b5e20";
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+
+      const cx = x + w / 2;
+      const cy = flip ? y + h - 10 : y + 10;
+      const petalR = 12;
+      const petals = 8;
+
+      ctx.fillStyle = "#ff6b6b";
+      for (let i = 0; i < petals; i++) {
+        const a = (i / petals) * Math.PI * 2;
+        ctx.beginPath();
+        ctx.ellipse(cx + Math.cos(a) * 14, cy + Math.sin(a) * 14, petalR, 8, a, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.fillStyle = "#ffd24d";
+      ctx.beginPath();
+      ctx.arc(cx, cy, 9, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = "#1f1f1f";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(x, y, w, h);
+    }
+
+    function drawGround() {
+      ctx.fillStyle = "#7ddc7d";
+      ctx.fillRect(0, FLOOR_Y, canvas.width, canvas.height - FLOOR_Y);
+
+      for (let i = 12; i < canvas.width; i += 40) {
+        ctx.beginPath();
+        ctx.arc(i, FLOOR_Y + 18, 3, 0, Math.PI * 2);
+        ctx.fillStyle = "#ff6b6b";
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(i + 6, FLOOR_Y + 22, 2, 0, Math.PI * 2);
+        ctx.fillStyle = "#ffd24d";
+        ctx.fill();
+      }
+    }
+
+    function drawUI() {
+      if (!running) return;
+      ctx.fillStyle = "rgba(0,0,0,0.25)";
+      ctx.font = "700 14px system-ui";
+      ctx.fillText(`Mode: ${MODES[modeKey].label}`, 12, 22);
+    }
+
+    function update() {
+      frame++;
+
+      // Spawn based on spacing (time between pipes)
+      // Lower speed => spawn a little slower so it doesn't feel empty
+      const spawnEveryFrames = Math.max(55, Math.floor(cfg.spacing / (cfg.speed * 0.9)));
+      if (frame % spawnEveryFrames === 0) spawnPipe();
+
+      // Bee physics
+      bee.vy += cfg.gravity;
+      bee.y += bee.vy;
+      bee.angle = Math.max(-0.6, Math.min(1.1, bee.vy / 10));
+
+      // Move pipes
+      for (const p of pipes) p.x -= cfg.speed;
+      pipes = pipes.filter(p => p.x + PIPE_WIDTH > -20);
+
+      // Score + collision
+      for (const p of pipes) {
+        const gapTop = p.topH;
+        const gapBottom = p.topH + cfg.gap;
+
+        if (!p.passed && p.x + PIPE_WIDTH < bee.x - bee.r) {
+          p.passed = true;
+          score++;
+          scoreEl.textContent = score;
+        }
+
+        const hitTop = rectCircleCollide(p.x, 0, PIPE_WIDTH, gapTop, bee.x, bee.y, bee.r);
+        const bottomH = FLOOR_Y - gapBottom;
+        const hitBottom = rectCircleCollide(p.x, gapBottom, PIPE_WIDTH, bottomH, bee.x, bee.y, bee.r);
+
+        if (hitTop || hitBottom) { endGame(); return; }
+      }
+
+      if (bee.y - bee.r < 0 || bee.y + bee.r > FLOOR_Y) { endGame(); return; }
+    }
+
+    function render() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // cloud-ish dots
+      ctx.globalAlpha = 0.2;
+      for (let i = 0; i < 10; i++) {
+        ctx.beginPath();
+        ctx.arc((i * 60 + (frame % 60)) % canvas.width, 70 + (i % 3) * 25, 18, 0, Math.PI * 2);
+        ctx.fillStyle = "#ffffff";
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+
+      for (const p of pipes) {
+        const gapTop = p.topH;
+        const gapBottom = p.topH + cfg.gap;
+        const bottomH = FLOOR_Y - gapBottom;
+
+        drawFlowerPipe(p.x, 0, PIPE_WIDTH, gapTop, true);
+        drawFlowerPipe(p.x, gapBottom, PIPE_WIDTH, bottomH, false);
+      }
+
+      drawBee();
+      drawGround();
+      drawUI();
+    }
+
+    function loop() {
+      if (!running || paused) return;
+      update();
+      render();
+      if (running) requestAnimationFrame(loop);
+    }
+
+    // --- Inputs ---
+    window.addEventListener("keydown", (e) => {
+      if (e.code === "Space") { e.preventDefault(); flap(); }
+      else if (e.key.toLowerCase() === "p") togglePause();
+      else if (e.key.toLowerCase() === "r") { reset(false); start(); }
+    });
+
+    canvas.addEventListener("mousedown", flap);
+    canvas.addEventListener("touchstart", (e) => { e.preventDefault(); flap(); }, { passive: false });
+
+    // Mode buttons
+    modeRow.addEventListener("click", (e) => {
+      const btn = e.target.closest(".modeBtn");
+      if (!btn) return;
+      applyMode(btn.dataset.mode);
+      reset(false);
+      start();
+    });
+
+    startLastBtn.addEventListener("click", () => {
+      reset(false);
+      start();
+    });
+
+    howBtn.addEventListener("click", () => {
+      showMenu(
+        "How to Play 🐝",
+        `• Press <span class="kbd">Space</span> or click/tap to flap.<br/>
+         • Fly through the gaps between flowers.<br/>
+         • +1 point per gap passed.<br/>
+         • Press <span class="kbd">P</span> to pause, <span class="kbd">R</span> to restart.<br/><br/>
+         <span style="color:#555;">Choose a difficulty below to begin.</span>`
+      );
+    });
+
+    restartBtn.addEventListener("click", () => { reset(false); start(); });
+    pauseBtn.addEventListener("click", togglePause);
+
+    // Init
+    reset(true);
+  </script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bees, Blooms, and Data</title>
+
+  <!-- Link to stylesheet -->
+  <link rel="stylesheet" href="bees.css" />
+
+  <!-- Tableau Embedding API (v3) -->
+  <script type="module" src="https://public.tableau.com/javascripts/api/tableau.embedding.3.latest.min.js"></script>
+</head>
+
+<body>
+  <!-- Top anchor target -->
+  <div id="top"></div>
+
+  <div class="page">
+    <!-- HEADER -->
+    <div class="header card">
+      <h1>Bees, Blooms, and Better Data 🐝</h1>
+      <p class="subtitle">
+        A page about my hyperfixation: bees, pollination, and what the data says about colony losses.
+      </p>
+
+      <!-- Navigation back to professional-looking pages -->
+      <nav class="nav">
+        <a href="index.bees.html">Home</a>
+        <a href="resume.bees.html">Resume</a>
+        <a href="bee.flappy.html">Bee Game</a>
+        <a class="jump" href="#tableau">Jump to Tableau Dashboard ↓</a>
+      </nav>
+    </div>
+
+    <!-- MAIN LAYOUT -->
+    <div class="layout">
+      <!-- LEFT / MAIN CONTENT -->
+      <div class="main card">
+        <h2>Why bees are worth obsessing over</h2>
+        <p>
+          Bees are tiny logistics geniuses: they move pollen between flowers, helping plants reproduce.
+          When bee colonies struggle, it can ripple into gardens, farms, and ecosystems.
+        </p>
+
+        <!-- at least one image NOT from Bootstrap theme -->
+        <figure class="figure">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/0/0c/A_bee_on_flowers.jpg"
+            alt="Honeybee landing on a flower"
+          />
+          <figcaption>
+            Honeybee on a flower (image from Wikimedia Commons).
+          </figcaption>
+        </figure>
+
+        <h3 id="learn">A mini “bee hobby” checklist</h3>
+
+        <!-- Ordered list with an unordered list embedded -->
+        <ol class="steps">
+          <li>
+            Plant bee-friendly flowers
+            <ul>
+              <li>Native wildflowers</li>
+              <li>Lavender, borage, and coneflower</li>
+              <li>Herbs that bloom (thyme, oregano, basil)</li>
+            </ul>
+          </li>
+          <li>
+            Avoid pesticides (especially during bloom)
+            <ul>
+              <li>Use targeted, minimal treatments if necessary</li>
+              <li>Water early/late to reduce stress on pollinators</li>
+            </ul>
+          </li>
+          <li>
+            Track what you see
+            <ul>
+              <li>How many bees per minute?</li>
+              <li>Which flowers get the most visits?</li>
+              <li>What changes month-to-month?</li>
+            </ul>
+          </li>
+        </ol>
+
+        <!-- Requirement: Embedded YouTube video -->
+        <h2 id="video">Quick video: bees + pollination</h2>
+
+        <div class="video-wrap">
+          <iframe
+            src="https://www.youtube.com/embed/9dpsZOc1b4M"
+            title="YouTube video about bees and pollination"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen>
+          </iframe>
+        </div>
+
+        <p class="toplink">
+          <a href="#top">Back to top ↑</a>
+        </p>
+      </div>
+
+      <!-- RIGHT / SIDEBAR -->
+      <div class="side card">
+        <h2>On-page anchors</h2>
+        <ul class="links">
+          <li><a href="#learn">Jump to the checklist</a></li>
+          <li><a href="#video">Jump to the YouTube video</a></li>
+          <li><a href="#tableau">Jump to the Tableau graph</a></li>
+        </ul>
+
+        <h2>Bee fun facts</h2>
+        <p>
+          A hive is a team sport. Workers, drones, and a queen each have roles that keep the colony running.
+        </p>
+      </div>
+    </div>
+
+    <!-- TABLEAU SECTION -->
+    <div class="tableau card" id="tableau">
+      <h2>Total Annual Loss of Bee Colonies in the U.S.</h2>
+
+      <!-- Tableau embed (Embedding API v3 web component) -->
+      <tableau-viz
+        id="beeLossViz"
+        src="https://public.tableau.com/views/TotalAnnualLossofBeeColoniesintheUS/Dashboard1"
+        toolbar="bottom"
+        height="750"
+        width="100%">
+      </tableau-viz>
+
+      <p class="toplink">
+        <a href="#top">Back to top ↑</a>
+      </p>
+    </div>
+
+  </div>
+</body>
+</html>
